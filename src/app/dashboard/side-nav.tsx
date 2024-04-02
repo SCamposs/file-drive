@@ -2,7 +2,8 @@
 
 import { Button } from '@/components/ui/button'
 import clsx from 'clsx'
-import { FileIcon, Link, StarIcon } from 'lucide-react'
+import { FileIcon, StarIcon } from 'lucide-react'
+import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
 export function SideNav() {
