@@ -5,7 +5,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import { Doc, Id } from '../../convex/_generated/dataModel'
+import { Doc, Id } from '../../../../convex/_generated/dataModel'
 import { Button } from '@/components/ui/button'
 import { ReactNode, useState } from 'react'
 
@@ -35,7 +35,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
 import { useMutation } from 'convex/react'
-import { api } from '../../convex/_generated/api'
+import { api } from '../../../../convex/_generated/api'
 import { useToast } from '@/components/ui/use-toast'
 import Image from 'next/image'
 

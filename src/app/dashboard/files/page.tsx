@@ -2,7 +2,7 @@
 
 import { useOrganization, useUser } from '@clerk/nextjs'
 import { useQuery } from 'convex/react'
-import { api } from '../../convex/_generated/api'
+import { api } from '../../../../convex/_generated/api'
 import UploadButton from './upload-button'
 import { FileCard } from './file-card'
 import Image from 'next/image'
@@ -25,7 +25,7 @@ function Placeholder() {
   )
 }
 
-export default function Home() {
+export default function FilesPage() {
   const organization = useOrganization()
   const user = useUser()
   const [query, setQuery] = useState('')
@@ -39,7 +39,7 @@ export default function Home() {
   const isLoading = files === undefined
 
   return (
-    <main className="container mx-auto pt-12">
+    <div>
       {isLoading && (
         <div className="flex flex-col gap-8 w-full items-center mt-24">
           <Loader2 className="h-32 w-32 animate-spin text-gray-600" />
@@ -66,6 +66,6 @@ export default function Home() {
           </div>
         </>
       )}
-    </main>
+    </div>
   )
 }
