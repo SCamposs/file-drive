@@ -5,8 +5,10 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { formatRelative } from 'date-fns'
+
 import { Doc, Id } from '../../../../convex/_generated/dataModel'
-import { Button } from '@/components/ui/button'
 import { ReactNode, useState } from 'react'
 
 import {
@@ -18,6 +20,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import {
   ArchiveRestoreIcon,
+  FileIcon,
   FileTextIcon,
   GanttChartIcon,
   ImageIcon,
@@ -38,7 +41,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
-import { useMutation } from 'convex/react'
+import { useMutation, useQuery } from 'convex/react'
 import { api } from '../../../../convex/_generated/api'
 import { useToast } from '@/components/ui/use-toast'
 import Image from 'next/image'
@@ -54,6 +57,7 @@ function FileCardActions({
   const deleteFile = useMutation(api.files.deleteFile)
   const restoreFile = useMutation(api.files.restoreFile)
   const toggleFavorite = useMutation(api.files.toggleFavorite)
+
   const { toast } = useToast()
 
   const [isConfirmOpen, setIsConfirmOpen] = useState(false)
@@ -94,6 +98,14 @@ function FileCardActions({
         <DropdownMenuContent>
           <DropdownMenuItem
             onClick={() => {
+              window.open(getFileUrl(file.fileId), '_blank')
+            }}
+            className="flex gap-1 items-center cursor-pointer"
+          >
+            <FileIcon className="w-4 h-4" /> Download
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() => {
               toggleFavorite({ fileId: file._id })
             }}
             className="flex gap-1 items-center cursor-pointer"
@@ -108,6 +120,7 @@ function FileCardActions({
               </div>
             )}
           </DropdownMenuItem>
+
           <Protect role="org:admin" fallback={<></>}>
             <DropdownMenuSeparator />
             <DropdownMenuItem
@@ -122,7 +135,6 @@ function FileCardActions({
             >
               {file.shouldDelete ? (
                 <div className="flex gap-1 text-green-600 items-center cursor-pointer">
-                  {' '}
                   <ArchiveRestoreIcon className="w-4 h-4" /> Restore
                 </div>
               ) : (
@@ -149,6 +161,9 @@ export function FileCard({
   file: Doc<'files'>
   favorites: Doc<'favorites'>[]
 }) {
+  const userProfile = useQuery(api.users.getUserProfile, {
+    userId: file.userId,
+  })
   const typeIcons = {
     image: <ImageIcon />,
     pdf: <FileTextIcon />,
@@ -162,7 +177,7 @@ export function FileCard({
   return (
     <Card>
       <CardHeader className="relative">
-        <CardTitle className="flex gap-2 ">
+        <CardTitle className="flex gap-2 text-base font-normal">
           <div className="flex justify-center">{typeIcons[file.type]}</div>
           {file.name}
         </CardTitle>
@@ -183,14 +198,17 @@ export function FileCard({
         {file.type === 'csv' && <GanttChartIcon className="w-20 h-20" />}
         {file.type === 'pdf' && <FileTextIcon className="w-20 h-20" />}
       </CardContent>
-      <CardFooter className="flex justify-center">
-        <Button
-          onClick={() => {
-            window.open(getFileUrl(file.fileId), '_blank')
-          }}
-        >
-          Download
-        </Button>
+      <CardFooter className="flex justify-between">
+        <div className="flex gap-2 text-xs text-gray-700 w-40 items-center">
+          <Avatar className="w-6 h-6">
+            <AvatarImage src={userProfile?.image} />
+            <AvatarFallback>CN</AvatarFallback>
+          </Avatar>
+          {userProfile?.name}
+        </div>
+        <div className="text-xs text-gray-700">
+          Uploaded on {formatRelative(new Date(file._creationTime), new Date())}
+        </div>
       </CardFooter>
     </Card>
   )
