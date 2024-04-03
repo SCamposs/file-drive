@@ -17,6 +17,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import {
+  ArchiveRestoreIcon,
   FileTextIcon,
   GanttChartIcon,
   ImageIcon,
@@ -51,6 +52,7 @@ function FileCardActions({
   isFavorited: boolean
 }) {
   const deleteFile = useMutation(api.files.deleteFile)
+  const restoreFile = useMutation(api.files.restoreFile)
   const toggleFavorite = useMutation(api.files.toggleFavorite)
   const { toast } = useToast()
 
@@ -63,8 +65,8 @@ function FileCardActions({
           <AlertDialogHeader>
             <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete your
-              file and remove the data from our servers.
+              This action will mark the file for our deletion process. Files are
+              deleted periodically.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -74,8 +76,8 @@ function FileCardActions({
                 await deleteFile({ fileId: file._id })
                 toast({
                   variant: 'default',
-                  title: 'File deleted',
-                  description: 'Your file is now gone from the system',
+                  title: 'File marked for deletion',
+                  description: 'Your file will be deleted automatically soon.',
                 })
               }}
             >
@@ -109,11 +111,25 @@ function FileCardActions({
           <Protect role="org:admin" fallback={<></>}>
             <DropdownMenuSeparator />
             <DropdownMenuItem
-              onClick={() => setIsConfirmOpen(true)}
-              className="flex gap-1 text-red-600 items-center cursor-pointer"
+              onClick={() => {
+                if (file.shouldDelete) {
+                  restoreFile({ fileId: file._id })
+                } else {
+                  setIsConfirmOpen(true)
+                }
+              }}
+              className="flex gap-1 items-center cursor-pointer"
             >
-              <TrashIcon className="w-4 h-4" />
-              Delete
+              {file.shouldDelete ? (
+                <div className="flex gap-1 text-green-600 items-center cursor-pointer">
+                  {' '}
+                  <ArchiveRestoreIcon className="w-4 h-4" /> Restore
+                </div>
+              ) : (
+                <div className="flex gap-1 text-red-600 items-center cursor-pointer">
+                  <TrashIcon className="w-4 h-4" /> Delete
+                </div>
+              )}
             </DropdownMenuItem>
           </Protect>
         </DropdownMenuContent>
