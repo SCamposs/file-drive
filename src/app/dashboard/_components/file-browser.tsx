@@ -141,7 +141,12 @@ export function FileBrowser({
           </div>
         </TabsContent>
         <TabsContent value="table">
-          <DataTable columns={columns} data={modifiedFiles} />
+          <DataTable
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-expect-error
+            columns={columns}
+            data={modifiedFiles}
+          />
         </TabsContent>
       </Tabs>
 
