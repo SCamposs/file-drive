@@ -5,12 +5,13 @@ import ConvexClientProvider from './ConvexClientProvider'
 import { Header } from './header'
 import { Toaster } from '@/components/ui/toaster'
 import { Footer } from './footer'
+import { ThemeProvider } from './theme/theme-provider'
 
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'File Store',
-  description: 'storage application',
+  title: 'File Drive',
+  description: '',
 }
 
 export default function RootLayout({
@@ -21,12 +22,19 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <ConvexClientProvider>
-          <Toaster />
-          <Header />
-          {children}
-          <Footer />
-        </ConvexClientProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <ConvexClientProvider>
+            <Toaster />
+            <Header />
+            {children}
+            <Footer />
+          </ConvexClientProvider>
+        </ThemeProvider>
       </body>
     </html>
   )
