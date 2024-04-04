@@ -1,4 +1,4 @@
-import { Doc, Id } from '../../../../convex/_generated/dataModel'
+import { Doc } from '../../../../convex/_generated/dataModel'
 import { useState } from 'react'
 
 import {
@@ -37,7 +37,7 @@ export function FileCardActions({
   file,
   isFavorited,
 }: {
-  file: Doc<'files'>
+  file: Doc<'files'> & { url: string | null }
   isFavorited: boolean
 }) {
   const deleteFile = useMutation(api.files.deleteFile)
@@ -85,7 +85,8 @@ export function FileCardActions({
         <DropdownMenuContent>
           <DropdownMenuItem
             onClick={() => {
-              window.open(getFileUrl(file.fileId), '_blank')
+              if (!file.url) return
+              window.open(file.url, '_blank')
             }}
             className="flex gap-1 items-center cursor-pointer"
           >
@@ -144,8 +145,4 @@ export function FileCardActions({
       </DropdownMenu>
     </>
   )
-}
-
-export function getFileUrl(fileId: Id<'_storage'>): string {
-  return `${process.env.NEXT_PUBLIC_CONVEX_URL}/api/storage/${fileId}`
 }

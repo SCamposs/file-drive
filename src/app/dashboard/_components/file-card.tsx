@@ -16,12 +16,12 @@ import { FileTextIcon, GanttChartIcon, ImageIcon } from 'lucide-react'
 import { useQuery } from 'convex/react'
 import { api } from '../../../../convex/_generated/api'
 import Image from 'next/image'
-import { FileCardActions, getFileUrl } from './file-actions'
+import { FileCardActions } from './file-actions'
 
 export function FileCard({
   file,
 }: {
-  file: Doc<'files'> & { isFavorited: boolean }
+  file: Doc<'files'> & { isFavorited: boolean; url: string | null }
 }) {
   const userProfile = useQuery(api.users.getUserProfile, {
     userId: file.userId,
@@ -34,7 +34,7 @@ export function FileCard({
 
   return (
     <Card>
-      <CardHeader className="relative">
+      <CardHeader className="relative ">
         <CardTitle className="flex gap-2 text-base font-normal">
           <div className="flex justify-center">{typeIcons[file.type]}</div>
           {file.name}
@@ -43,21 +43,22 @@ export function FileCard({
           <FileCardActions isFavorited={file.isFavorited} file={file} />
         </div>
       </CardHeader>
-      <CardContent className="h-[200px] flex justify-center items-center">
-        {file.type === 'image' && (
+      <CardContent className="h-[200px] flex justify-center items-center overflow-hidden rounded-lg">
+        {file.type === 'image' && file.url && (
           <Image
             alt={file.name}
             width="200"
             height="100"
-            src={getFileUrl(file.fileId)}
+            src={file.url}
+            objectFit="cover"
           />
         )}
 
         {file.type === 'csv' && <GanttChartIcon className="w-20 h-20" />}
         {file.type === 'pdf' && <FileTextIcon className="w-20 h-20" />}
       </CardContent>
-      <CardFooter className="flex justify-between">
-        <div className="flex gap-2 text-xs text-gray-700 w-40 items-center">
+      <CardFooter className="flex justify-between pt-5">
+        <div className="flex gap-2 text-xs text-gray-700 w-30 items-center">
           <Avatar className="w-6 h-6">
             <AvatarImage src={userProfile?.image} />
             <AvatarFallback>CN</AvatarFallback>
