@@ -1,0 +1,5 @@
+# Ignore prettier errors on build for Vercel
+/.vercel
+# Ignore artifacts:
+build
+coverage
