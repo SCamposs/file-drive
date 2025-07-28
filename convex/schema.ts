@@ -6,6 +6,7 @@ export const fileTypes = v.union(
   v.literal('image'),
   v.literal('csv'),
   v.literal('pdf'),
+  v.literal('document'),
 )
 
 export default defineSchema({

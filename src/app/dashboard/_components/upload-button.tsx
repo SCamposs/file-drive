@@ -35,7 +35,25 @@ const formSchema = z.object({
   title: z.string().min(1).max(200),
   file: z
     .custom<FileList>((val) => val instanceof FileList, 'Required')
-    .refine((files) => files.length > 0, 'Required'),
+    .refine((files) => files.length > 0, 'Required')
+    .refine((files) => {
+      const allowedTypes = [
+        'image/png',
+        'image/jpeg',
+        'image/jpg',
+        'image/gif',
+        'image/webp',
+        'application/pdf',
+        'text/csv',
+        'application/vnd.ms-excel',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      ]
+      return allowedTypes.includes(files[0]?.type)
+    }, 'File type not supported. Please upload PNG, JPG, GIF, WebP, PDF, or CSV files.')
+    .refine((files) => {
+      const maxSize = 50 * 1024 * 1024 // 50MB
+      return files[0]?.size <= maxSize
+    }, 'File size must be less than 50MB'),
 })
 
 export default function UploadButton() {
@@ -57,32 +75,46 @@ export default function UploadButton() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     if (!orgId) return
 
-    const postUrl = await generateUploadUrl()
-
-    const fileType = values.file[0]!.type
-
-    const result = await fetch(postUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': fileType },
-      body: values.file[0],
-    })
-    const { storageId } = await result.json()
-
-    const types = {
-      'image/png': 'image',
-      'application/pdf': 'pdf',
-      'text/csv': 'csv',
-    } as Record<string, Doc<'files'>['type']>
     try {
+      const postUrl = await generateUploadUrl()
+
+      const fileType = values.file[0]!.type
+
+      const result = await fetch(postUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': fileType },
+        body: values.file[0],
+      })
+
+      if (!result.ok) {
+        throw new Error(`Upload failed: ${result.status} ${result.statusText}`)
+      }
+
+      const { storageId } = await result.json()
+
+      const types = {
+        'image/png': 'image',
+        'image/jpeg': 'image',
+        'image/jpg': 'image',
+        'image/gif': 'image',
+        'image/webp': 'image',
+        'application/pdf': 'pdf',
+        'text/csv': 'csv',
+        'application/vnd.ms-excel': 'csv',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
+          'csv',
+      } as Record<string, Doc<'files'>['type']>
+
+      const fileTypeForUpload = types[fileType] || 'image' // fallback para image
+
       await createFile({
         name: values.title,
         fileId: storageId,
         orgId,
-        type: types[fileType],
+        type: fileTypeForUpload,
       })
 
       form.reset()
-
       setIsFileDialogOpen(false)
 
       toast({
@@ -91,6 +123,7 @@ export default function UploadButton() {
         description: 'Now everyone can view your file',
       })
     } catch (err) {
+      console.error('Upload error:', err)
       toast({
         variant: 'destructive',
         title: 'Something went wrong',
@@ -148,7 +181,11 @@ export default function UploadButton() {
                     <FormItem>
                       <FormLabel>File</FormLabel>
                       <FormControl>
-                        <Input type="file" {...fileRef} />
+                        <Input
+                          type="file"
+                          {...fileRef}
+                          accept=".png,.jpg,.jpeg,.gif,.webp,.pdf,.csv,.xls,.xlsx"
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

@@ -16,7 +16,12 @@ export const generateUploadUrl = mutation(async (ctx) => {
     throw new ConvexError('You must be logged in to upload a file.')
   }
 
-  return await ctx.storage.generateUploadUrl()
+  try {
+    return await ctx.storage.generateUploadUrl()
+  } catch (error) {
+    console.error('Error generating upload URL:', error)
+    throw new ConvexError('Failed to generate upload URL')
+  }
 })
 
 async function hasAccessToOrg(ctx: QueryCtx | MutationCtx, orgId: string) {
@@ -61,13 +66,18 @@ export const createFile = mutation({
       throw new ConvexError('You do not have access to this org')
     }
 
-    await ctx.db.insert('files', {
-      name: args.name,
-      fileId: args.fileId,
-      orgId: args.orgId,
-      type: args.type,
-      userId: hasAccess.user._id,
-    })
+    try {
+      await ctx.db.insert('files', {
+        name: args.name,
+        fileId: args.fileId,
+        orgId: args.orgId,
+        type: args.type,
+        userId: hasAccess.user._id,
+      })
+    } catch (error) {
+      console.error('Error creating file:', error)
+      throw new ConvexError('Failed to create file record')
+    }
   },
 })
 
