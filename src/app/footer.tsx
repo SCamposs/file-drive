@@ -2,8 +2,8 @@ import Link from 'next/link'
 
 export function Footer() {
   return (
-    <div className="fixed bottom-0 left-0 w-full h-20 bg-gray-100 flex items-center">
-      <div className="container mx-auto flex justify-between items-center dark:text-background">
+    <div className="fixed bottom-0 left-0 w-full h-20 bg-background border-t flex items-center">
+      <div className="container mx-auto flex justify-between items-center text-foreground">
         <div>FileDrive</div>
 
         <Link className="text-blue-500 hover:text-blue-700" href="/privacy">

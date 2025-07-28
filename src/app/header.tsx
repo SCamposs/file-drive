@@ -12,11 +12,11 @@ import { ModeToggle } from './mode-toggle'
 
 export function Header() {
   return (
-    <div className="relative z-10 border-b py-4 bg-gray-50">
+    <div className="relative z-10 border-b py-4 bg-background">
       <div className="items-center container flex mx-auto justify-between">
         <Link
           href="/"
-          className="flex gap-2 items-center text-xl dark:text-background"
+          className="flex gap-2 items-center text-xl text-foreground"
         >
           <Image src="/logo.png" width="45" height="45" alt="file drive logo" />
           File Drive

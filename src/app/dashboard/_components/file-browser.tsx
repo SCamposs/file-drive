@@ -129,7 +129,7 @@ export function FileBrowser({
 
         {isLoading && (
           <div className="flex flex-col gap-8 w-full items-center mt-24">
-            <Loader2 className="h-32 w-32 animate-spin text-gray-600" />
+            <Loader2 className="h-32 w-32 animate-spin text-muted-foreground" />
             <div className="text-2xl">Loading your files...</div>
           </div>
         )}
