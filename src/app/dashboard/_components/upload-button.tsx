@@ -75,6 +75,10 @@ export default function UploadButton() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     if (!orgId) return
 
+    console.log('DEBUG Frontend - orgId:', orgId)
+    console.log('DEBUG Frontend - organization.organization?.id:', organization.organization?.id)
+    console.log('DEBUG Frontend - user.user?.id:', user.user?.id)
+
     try {
       const postUrl = await generateUploadUrl()
 
